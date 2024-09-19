@@ -1,6 +1,5 @@
 using System;
 using HarmonyLib;
-using LethalMin;
 using UnityEngine;
 
 [HarmonyPatch(typeof(TimeOfDay))]
@@ -10,8 +9,6 @@ public class TimeOfDayPatchPatch
     [HarmonyPostfix]
     public static void MoveDial(TimeOfDay __instance)
     {
-        if (!LethalMin.LethalMin.ReplaceClock) { return; }
-        
         if (__instance.currentDayTimeStarted)
         {
             float startX = 371.3f;
