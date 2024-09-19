@@ -34,7 +34,14 @@ namespace LCPikminClock
             Instance = this;
             Patch();
             LoadAsset();
-            BindConfigs();
+            if (IsDependencyLoaded("ainavt.lc.lethalconfig"))
+            {
+                BindLCConfigs();
+            }
+            else
+            {
+                BindConfigs();
+            }
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
         public void BindConfigs()
@@ -73,7 +80,44 @@ namespace LCPikminClock
                 TimeColor = timeColorConfig.Value;
                 HUDManagerPatch.SetColors();
             };
-
+        }
+        
+        public void BindLCConfigs()
+        {
+            var ShowClockig = Config.Bind("HUD", "Show Clock", false, "Shows the actual time below the bar icon.");
+            var iconColorConfig = Config.Bind("Colors", "Icon Color", "(255,100,0,255)", "Color for the icon. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            var dotsColorConfig = Config.Bind("Colors", "Dots Color", "(255,0,0,255)", "Color for the dots. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            var linesColorConfig = Config.Bind("Colors", "Lines Color", "(255,0,0,255)", "Color for the lines. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            var timeColorConfig = Config.Bind("Colors", "Time Color", "(255,124,0,255)", "Color for the time. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            TimeColor = timeColorConfig.Value;
+            LinesColor = linesColorConfig.Value;
+            DotsColor = dotsColorConfig.Value;
+            IconColor = iconColorConfig.Value;
+            ShowTime = ShowClockig.Value;
+            ShowClockig.SettingChanged += (obj, args) =>
+            {
+                ShowTime = ShowClockig.Value;
+            };
+            iconColorConfig.SettingChanged += (obj, args) =>
+            {
+                IconColor = iconColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
+            dotsColorConfig.SettingChanged += (obj, args) =>
+            {
+                DotsColor = dotsColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
+            linesColorConfig.SettingChanged += (obj, args) =>
+            {
+                LinesColor = linesColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
+            timeColorConfig.SettingChanged += (obj, args) =>
+            {
+                TimeColor = timeColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
             if (IsDependencyLoaded("ainavt.lc.lethalconfig"))
             {
                 var TimeBool2 = new BoolCheckBoxConfigItem(ShowClockig, new BoolCheckBoxOptions
