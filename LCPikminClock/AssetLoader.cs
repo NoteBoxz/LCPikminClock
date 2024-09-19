@@ -50,7 +50,7 @@ namespace LCPikminClock
             {
                 throw new InvalidOperationException($"Failed to load asset: {assetName}. Asset exists in bundle but couldn't be loaded.");
             }
-            LCPikminClock.Logger.LogInfo($"ASSETLOADER: Loaded {assetName}");
+            //LCPikminClock.Logger.LogInfo($"ASSETLOADER: Loaded {assetName}");
             return asset;
         }
     }

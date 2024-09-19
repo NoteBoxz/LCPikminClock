@@ -26,6 +26,7 @@ namespace LCPikminClock
         internal static Harmony? Harmony { get; set; }
         public static GameObject? ClockUI = null!;
         public static bool ShowTime = false;
+        public static string IconColor, DotsColor, LinesColor, TimeColor;
 
         private void Awake()
         {
@@ -39,25 +40,77 @@ namespace LCPikminClock
         public void BindConfigs()
         {
             var ShowClockig = Config.Bind("HUD", "Show Clock", false, "Shows the actual time below the bar icon.");
+            var iconColorConfig = Config.Bind("Colors", "Icon Color", "(255,100,0,255)", "Color for the icon. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            var dotsColorConfig = Config.Bind("Colors", "Dots Color", "(255,0,0,255)", "Color for the dots. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            var linesColorConfig = Config.Bind("Colors", "Lines Color", "(255,0,0,255)", "Color for the lines. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            var timeColorConfig = Config.Bind("Colors", "Time Color", "(255,124,0,255)", "Color for the time. Format the input like this (R,G,B,A)/(000,000,000,000). No letters, No Spaces.");
+            TimeColor = timeColorConfig.Value;
+            LinesColor = linesColorConfig.Value;
+            DotsColor = dotsColorConfig.Value;
+            IconColor = iconColorConfig.Value;
             ShowTime = ShowClockig.Value;
             ShowClockig.SettingChanged += (obj, args) =>
             {
                 ShowTime = ShowClockig.Value;
             };
+            iconColorConfig.SettingChanged += (obj, args) =>
+            {
+                IconColor = iconColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
+            dotsColorConfig.SettingChanged += (obj, args) =>
+            {
+                DotsColor = dotsColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
+            linesColorConfig.SettingChanged += (obj, args) =>
+            {
+                LinesColor = linesColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
+            timeColorConfig.SettingChanged += (obj, args) =>
+            {
+                TimeColor = timeColorConfig.Value;
+                HUDManagerPatch.SetColors();
+            };
 
             if (IsDependencyLoaded("ainavt.lc.lethalconfig"))
             {
-
                 var TimeBool2 = new BoolCheckBoxConfigItem(ShowClockig, new BoolCheckBoxOptions
                 {
                     RequiresRestart = true,
                 });
                 LethalConfigManager.AddConfigItem(TimeBool2);
+
+                // Add configuration entries for color strings
+                var iconColorItem = new TextInputFieldConfigItem(iconColorConfig, new TextInputFieldOptions
+                {
+                    RequiresRestart = false,
+                });
+                LethalConfigManager.AddConfigItem(iconColorItem);
+
+                var dotsColorItem = new TextInputFieldConfigItem(dotsColorConfig, new TextInputFieldOptions
+                {
+                    RequiresRestart = false,
+                });
+                LethalConfigManager.AddConfigItem(dotsColorItem);
+
+                var linesColorItem = new TextInputFieldConfigItem(linesColorConfig, new TextInputFieldOptions
+                {
+                    RequiresRestart = false,
+                });
+                LethalConfigManager.AddConfigItem(linesColorItem);
+
+                var timeColorItem = new TextInputFieldConfigItem(timeColorConfig, new TextInputFieldOptions
+                {
+                    RequiresRestart = false,
+                });
+                LethalConfigManager.AddConfigItem(timeColorItem);
             }
         }
         internal static void LoadAsset()
         {
-            ClockUI = AssetLoader.LoadAsset<GameObject>("Assets/LethalminAssets/HUD/PikminTime.prefab");
+            ClockUI = AssetLoader.LoadAsset<GameObject>("Assets/ClockAssets/PikminTime.prefab");
         }
         public static bool IsDependencyLoaded(string pluginGUID)
         {
